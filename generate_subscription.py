@@ -22,7 +22,7 @@ OUT_DIR = ROOT / "output"
 SKIP_PROTOCOLS = {"freedom", "blackhole", "loopback", "dns"}
 
 SUBSCRIPTION_TITLE = "(•˕ •マⳊ Дудоня VPN"
-UPDATE_INTERVAL_HOURS = 12
+UPDATE_INTERVAL_HOURS = 1
 
 
 def build_vless_link(outbound: dict, name: str) -> str:

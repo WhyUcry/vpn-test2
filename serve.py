@@ -103,7 +103,7 @@ class Handler(BaseHTTPRequestHandler):
             "profile-title",
             "base64:" + base64.b64encode(TITLE.encode("utf-8")).decode("ascii"),
         )
-        self.send_header("profile-update-interval", "12")
+        self.send_header("profile-update-interval", str(gen.UPDATE_INTERVAL_HOURS))
         self.end_headers()
         self.wfile.write(body)
 
