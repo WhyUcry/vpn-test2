@@ -46,6 +46,14 @@
   // Happ принимает прямую ссылку вида happ://add/<URL подписки> (без base64)
   var SUB_PATH = 'output/sub.txt';
 
+  // Счётчик устройств. GitHub Pages не отдаёт статистику запросов,
+  // поэтому считаем сами: каждое устройство при добавлении подписки
+  // один раз увеличивает счётчик (флаг хранится в localStorage).
+  var COUNTER_API = 'https://abacus.jasoncameron.dev';
+  var COUNTER_NS = 'whyucry-vpn-test2';
+  var COUNTER_KEY = 'installs';
+  var DEVICE_KEY = 'skapidzonchik-sub-added';
+
   var base = new URL(SUB_PATH, location.href).href;
   var deep = 'happ://add/' + base;
 
@@ -56,6 +64,50 @@
 
   addBtn.href = deep;
   urlEl.textContent = base;
+
+  function counterUrl(action) {
+    return COUNTER_API + '/' + action + '/' + COUNTER_NS + '/' + COUNTER_KEY;
+  }
+
+  // Прочитать текущее количество устройств (без изменения счётчика)
+  function readCount() {
+    return fetch(counterUrl('get'))
+      .then(function (r) { return r.json(); })
+      .then(function (d) { return d.value; });
+  }
+
+  // Увеличить счётчик и вернуть новое значение
+  function hitCount() {
+    return fetch(counterUrl('hit'))
+      .then(function (r) { return r.json(); })
+      .then(function (d) { return d.value; });
+  }
+
+  function logCount() {
+    readCount().then(function (n) {
+      console.log('Устройств с подпиской «Скапиздончик vpn»: ' + n);
+    }).catch(function (e) {
+      console.warn('Не удалось получить количество устройств:', e);
+    });
+  }
+
+  // Учитываем устройство только один раз
+  function registerDevice() {
+    var known = false;
+    try { known = localStorage.getItem(DEVICE_KEY) === '1'; } catch (e) {}
+    if (known) { logCount(); return; }
+
+    hitCount().then(function (n) {
+      try { localStorage.setItem(DEVICE_KEY, '1'); } catch (e) {}
+      console.log('Устройство учтено. Всего устройств с подпиской «Скапиздончик vpn»: ' + n);
+    }).catch(function (e) {
+      console.warn('Не удалось обновить счётчик устройств:', e);
+    });
+  }
+
+  logCount();
+
+  addBtn.addEventListener('click', registerDevice);
 
   copyBtn.addEventListener('click', function () {
     var done = function () {
@@ -80,6 +132,7 @@
   // На телефоне сразу открываем Happ
   if (/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
     status.textContent = 'Открываем Happ…';
+    registerDevice();
     setTimeout(function () { location.href = deep; }, 700);
   }
 })();
