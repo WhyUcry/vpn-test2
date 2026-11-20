@@ -18,26 +18,8 @@ ROOT = Path(__file__).resolve().parent
 CONFIG_DIR = ROOT / "configs"
 OUT_DIR = ROOT / "output"
 
-# Порядок вывода серверов в подписке
-FILE_ORDER = [
-    "Венгрия",
-    "Россия",
-    "Сша",
-    "Франция",
-    "Хельсинки",
-    "Белые списки 1",
-    "Белые списки 2",
-    "Белые списки 3",
-]
-
+# Порядок вывода серверов в подписке — как файлы лежат в папке configs/
 SKIP_PROTOCOLS = {"freedom", "blackhole", "loopback", "dns"}
-
-
-def config_sort_key(path: Path):
-    try:
-        return (0, FILE_ORDER.index(path.stem))
-    except ValueError:
-        return (1, path.stem)
 
 
 def build_vless_link(outbound: dict, name: str) -> str:
@@ -142,16 +124,19 @@ def dedupe_key(outbound: dict):
 
 
 def collect_links():
-    """Читает configs/*.json и возвращает список ссылок без дубликатов."""
+    """Читает configs/*.json и возвращает ссылки в порядке файлов в папке.
+
+    Дубликаты не удаляются: если один и тот же сервер встречается в нескольких
+    конфигах, в подписке он будет столько же раз.
+    """
     if not CONFIG_DIR.is_dir():
         sys.exit(f"Не найдена папка с конфигами: {CONFIG_DIR}")
 
-    files = sorted(CONFIG_DIR.glob("*.json"), key=config_sort_key)
+    files = sorted(CONFIG_DIR.glob("*.json"), key=lambda p: p.name)
     if not files:
         sys.exit(f"В {CONFIG_DIR} нет .json файлов")
 
     links = []
-    seen = {}
     used_names = set()
     skipped = 0
 
@@ -164,37 +149,43 @@ def collect_links():
             continue
 
         remarks = (data.get("remarks") or path.stem).strip()
+        outbounds = data.get("outbounds") or []
 
-        for outbound in data.get("outbounds") or []:
-            if outbound.get("protocol") in SKIP_PROTOCOLS:
+        vless_outbounds = []
+        for outbound in outbounds:
+            protocol = outbound.get("protocol")
+            if protocol in SKIP_PROTOCOLS:
                 continue
-            if outbound.get("protocol") != "vless":
+            if protocol != "vless":
                 print(
                     f"[!] {path.name}: пропущен outbound {outbound.get('tag')} "
-                    f"({outbound.get('protocol')}) — поддерживается только VLESS",
+                    f"({protocol}) — поддерживается только VLESS",
                     file=sys.stderr,
                 )
                 continue
             try:
-                vnext = outbound["settings"]["vnext"][0]
+                outbound["settings"]["vnext"][0]
             except (KeyError, IndexError):
                 print(f"[!] {path.name}: пустой vnext у {outbound.get('tag')}", file=sys.stderr)
                 continue
+            vless_outbounds.append(outbound)
 
-            address = vnext.get("address")
-            port = int(vnext.get("port", 443))
-            name = f"{remarks} · {address}" if port == 443 else f"{remarks} · {address}:{port}"
+        total = len(vless_outbounds)
+        for index, outbound in enumerate(vless_outbounds, start=1):
+            # Название без адреса сервера. Если серверов в конфиге несколько,
+            # добавляем порядковый номер, чтобы они различались в клиенте.
+            name = remarks if total == 1 else f"{remarks} {index}"
+
+            # Одинаковые названия в разных файлах — уточняем именем файла
             if name in used_names:
-                # Один адрес с разными транспортами (например, tcp + udp) —
-                # добавляем тег outbound'а, чтобы серверы различались в клиенте
-                tag = outbound.get("tag")
-                name = f"{name} · {tag}" if tag else f"{name} · {len(links) + 1}"
+                candidate = f"{name} ({path.stem})"
+                counter = 2
+                while candidate in used_names:
+                    candidate = f"{name} ({path.stem} {counter})"
+                    counter += 1
+                name = candidate
             used_names.add(name)
 
-            key = dedupe_key(outbound)
-            if key in seen:
-                continue
-            seen[key] = name
             links.append(build_vless_link(outbound, name))
 
     return links, len(files), skipped
