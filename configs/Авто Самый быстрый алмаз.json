@@ -1,0 +1,121 @@
+{
+    "dns": {
+        "queryStrategy": "UseIP",
+        "servers": [
+            "8.8.8.8",
+            "1.1.1.1"
+        ]
+    },
+    "inbounds": [
+        {
+            "listen": "127.0.0.1",
+            "port": 10808,
+            "protocol": "socks",
+            "settings": {
+                "auth": "noauth",
+                "udp": true
+            },
+            "sniffing": {
+                "destOverride": [
+                    "http",
+                    "tls",
+                    "quic"
+                ],
+                "enabled": true,
+                "routeOnly": true
+            },
+            "tag": "socks"
+        },
+        {
+            "listen": "127.0.0.1",
+            "port": 10809,
+            "protocol": "http",
+            "settings": {
+                "allowTransparent": false
+            },
+            "sniffing": {
+                "destOverride": [
+                    "http",
+                    "tls",
+                    "quic"
+                ],
+                "enabled": true,
+                "routeOnly": true
+            },
+            "tag": "http"
+        }
+    ],
+    "meta": null,
+    "outbounds": [
+        {
+            "protocol": "vless",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "2.27.143.161",
+                        "port": 443,
+                        "users": [
+                            {
+                                "encryption": "none",
+                                "flow": "xtls-rprx-vision",
+                                "id": "9e642428-13e7-03e8-920e-cbcf7298b92a"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "realitySettings": {
+                    "fingerprint": "edge",
+                    "publicKey": "10rVZPoOUP1TlQviIAsQ_jAROX0fRQxH0C92nq_zGQc",
+                    "serverName": "919c2e654b58.j.cloudfront.hls.ttvnw.net",
+                    "shortId": "43dcff53849b81e6",
+                    "show": false
+                },
+                "security": "reality",
+                "tcpSettings": {
+                }
+            },
+            "tag": "proxy"
+        },
+        {
+            "protocol": "freedom",
+            "settings": {
+                "domainStrategy": "UseIPv4"
+            },
+            "tag": "direct"
+        },
+        {
+            "protocol": "blackhole",
+            "tag": "block"
+        }
+    ],
+    "remarks": "💎 Авто | Самый быстрый 💎",
+    "routing": {
+        "domainMatcher": "hybrid",
+        "domainStrategy": "IPIfNonMatch",
+        "rules": [
+            {
+                "outboundTag": "block",
+                "protocol": [
+                    "quic"
+                ],
+                "type": "field"
+            },
+            {
+                "outboundTag": "direct",
+                "protocol": [
+                    "bittorrent"
+                ],
+                "type": "field"
+            },
+            {
+                "domain": [
+                    "max.ru"
+                ],
+                "outboundTag": "direct"
+            }
+        ]
+    }
+}
