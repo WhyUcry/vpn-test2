@@ -14,10 +14,15 @@
     --orange: #f97316;
   }
   * { box-sizing: border-box; }
+  /* фон статичный: рисуем на html, чтобы при pull-to-refresh не вылезал белый */
+  html {
+    min-height: 100%;
+    background: radial-gradient(900px 520px at 50% -12%, #fff6e6, #ffddb8 48%, #ffc69a 100%) fixed;
+    background-color: #ffc69a;
+  }
   body {
     margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    padding: 28px 18px 44px; overflow-x: hidden;
-    background: radial-gradient(900px 520px at 50% -12%, #fff6e6, #ffddb8 48%, #ffc69a 100%);
+    padding: 28px 18px 44px; overflow-x: hidden; background: transparent;
     color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   }
@@ -187,22 +192,28 @@
   </div>
 
   <button class="btn ghost" id="copy" type="button">Скопировать ссылку</button>
-  <p class="hint">Если Happ не открылся — установите его и нажмите кнопку снова.<br>
-   Happ обновляет подписку каждый час (для ссылок sub.txt/sub); для JSON-подписки<br>
-   интервал обновлений включите вручную: подписка → Update interval → 1 hour.<br>
+  <a class="btn ghost" id="addCascade" href="#">Добавить с каскадами «Белые списки»</a>
+  <p class="hint">Нажмите кнопку — Happ сам добавит подписку и будет обновлять её каждый час.<br>
+   Кнопка ниже — полная конфигурация с каскадами: там Happ не показывает интервал,<br>
+   задайте его вручную (подписка → Update interval → 1 hour).<br>
   <code id="url"></code></p>
   <p class="paws-row" aria-hidden="true">🐾🐾🐾</p>
 </main><script>
 (function () {
   // Happ принимает прямую ссылку вида happ://add/<URL подписки> (без base64)
-  // Основная подписка — sub.json с полными конфигами: только так работают
-  // каскады «Белых списков» (p1 → tier2 → tier3 через loopback).
-  var SUB_PATH = 'output/sub.json';
+  //
+  // Основная подписка — sub.txt: это «текстовый» формат, в котором Happ читает
+  // строки #profile-title и #profile-update-interval. Только так в Happ
+  // видится правильное имя подписки и интервал автообновления (1 час).
+  // В sub.json такие строки вставить нельзя (это сломает JSON), поэтому
+  // sub.json вынесена в отдельную кнопку — она нужна ради каскадов
+  // «Белые списки» (p1 → tier2 → tier3 через loopback).
+  var SUB_PATH = 'output/sub.txt';
+  var CASCADE_PATH = 'output/sub.json';
 
-  // Название подписки. GitHub Pages не умеет отдавать заголовок profile-title,
-  // а JSON-массив не может содержать строку #profile-title (это сломает JSON),
-  // поэтому имя передаём фрагментом ссылки — так документировано в Happ:
-  //   https://url.com/sub#Your_TITLE
+  // Название подписки используется только для каскадной ссылки: там нет
+  // #profile-title, поэтому имя Happ возьмёт из фрагмента ссылки
+  // (формат из доков Happ: https://url.com/sub#Your_TITLE)
   var TITLE = '(•˕ •マⳊ Дудоня VPN';
 
   // Счётчик устройств. GitHub Pages не отдаёт статистику запросов,
@@ -214,15 +225,24 @@
   var DEVICE_KEY = 'skapidzonchik-sub-added';
 
   var base = new URL(SUB_PATH, location.href).href;
-  var subUrl = base + '#' + encodeURIComponent(TITLE);
+  // Имя и интервал лежат внутри sub.txt (#profile-title / #profile-update-interval),
+  // поэтому фрагмент к основной ссылке не добавляем — иначе Happ показывает
+  // вместо нормального имени «url-encoded» строку из ссылки.
+  var subUrl = base;
   var deep = 'happ://add/' + subUrl;
 
+  var cascadeBase = new URL(CASCADE_PATH, location.href).href;
+  var cascadeUrl = cascadeBase + '#' + encodeURIComponent(TITLE);
+  var cascadeDeep = 'happ://add/' + cascadeUrl;
+
   var addBtn = document.getElementById('add');
+  var cascadeBtn = document.getElementById('addCascade');
   var copyBtn = document.getElementById('copy');
   var status = document.getElementById('status');
   var urlEl = document.getElementById('url');
 
   addBtn.href = deep;
+  cascadeBtn.href = cascadeDeep;
   urlEl.textContent = base;
 
   function counterUrl(action) {
@@ -314,6 +334,7 @@
   console.log('Консоль: vpnSub.count() — количество устройств, vpnSub.help() — все команды.');
 
   addBtn.addEventListener('click', function () { registerDevice(false); });
+  cascadeBtn.addEventListener('click', function () { registerDevice(false); });
 
   copyBtn.addEventListener('click', function () {
     var done = function () {
@@ -335,12 +356,8 @@
     }
   });
 
-  // На телефоне сразу открываем Happ
-  if (/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
-    status.textContent = 'Открываем Happ…';
-    registerDevice(false);
-    setTimeout(function () { location.href = deep; }, 700);
-  }
+  // Никакого автооткрытия Happ: по ссылке всегда открывается эта страница,
+  // Happ запускается только по нажатию кнопки.
 })();
 </script>
 </body>
