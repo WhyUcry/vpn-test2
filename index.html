@@ -41,16 +41,13 @@
   <button class="btn ghost" id="copy" type="button">Скопировать ссылку</button>
   <p class="hint">Если Happ не открылся — установите его и нажмите кнопку снова.<br>
   <code id="url"></code></p>
-</main>
-<script>
+</main><script>
 (function () {
+  // Happ принимает прямую ссылку вида happ://add/<URL подписки> (без base64)
   var SUB_PATH = 'output/sub.txt';
-  var NAME = 'Скапиздончик vpn';
 
   var base = new URL(SUB_PATH, location.href).href;
-  var subUrl = base + '#' + encodeURIComponent(NAME);
-  var b64 = btoa(subUrl);
-  var deep = 'happ://add/' + b64;
+  var deep = 'happ://add/' + base;
 
   var addBtn = document.getElementById('add');
   var copyBtn = document.getElementById('copy');

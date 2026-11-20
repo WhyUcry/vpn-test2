@@ -21,6 +21,9 @@ OUT_DIR = ROOT / "output"
 # Порядок вывода серверов в подписке — как файлы лежат в папке configs/
 SKIP_PROTOCOLS = {"freedom", "blackhole", "loopback", "dns"}
 
+SUBSCRIPTION_TITLE = "Скапиздончик vpn"
+UPDATE_INTERVAL_HOURS = 12
+
 
 def build_vless_link(outbound: dict, name: str) -> str:
     """Превращает VLESS-outbound Xray в share-ссылку vless://..."""
@@ -195,7 +198,16 @@ def generate():
     links, total_files, skipped = collect_links()
     OUT_DIR.mkdir(exist_ok=True)
 
-    plain = "\n".join(links) + "\n"
+    # GitHub Pages не позволяет задавать HTTP-заголовки, поэтому название
+    # подписки и интервал обновления передаём строками внутри тела подписки
+    # (#profile-title / #profile-update-interval понимают Happ и v2rayNG).
+    title_b64 = base64.b64encode(SUBSCRIPTION_TITLE.encode("utf-8")).decode("ascii")
+    header = (
+        f"#profile-title: base64:{title_b64}\n"
+        f"#profile-update-interval: {UPDATE_INTERVAL_HOURS}\n"
+    )
+
+    plain = header + "\n".join(links) + "\n"
     encoded = base64.b64encode(plain.encode("utf-8")).decode("ascii")
 
     (OUT_DIR / "subscription.txt").write_text(plain, encoding="utf-8", newline="\n")

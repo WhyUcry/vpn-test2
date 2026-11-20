@@ -65,9 +65,7 @@ class Handler(BaseHTTPRequestHandler):
                 for link in links
             )
             sub_url = f"http://{self.headers.get('Host', '127.0.0.1')}/sub.txt"
-            happ = "happ://add/" + base64.b64encode(
-                f"{sub_url}#{TITLE}".encode("utf-8")
-            ).decode("ascii")
+            happ = f"happ://add/{sub_url}"
             html = f"""<!doctype html>
 <html lang="ru"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
