@@ -1,0 +1,208 @@
+{
+    "dns": {
+        "queryStrategy": "UseIP",
+        "servers": [
+            "8.8.8.8",
+            "1.1.1.1"
+        ]
+    },
+    "inbounds": [
+        {
+            "listen": "127.0.0.1",
+            "port": 10808,
+            "protocol": "socks",
+            "settings": {
+                "auth": "noauth",
+                "udp": true
+            },
+            "sniffing": {
+                "destOverride": [
+                    "http",
+                    "tls",
+                    "quic"
+                ],
+                "enabled": true,
+                "routeOnly": true
+            },
+            "tag": "socks"
+        },
+        {
+            "listen": "127.0.0.1",
+            "port": 10809,
+            "protocol": "http",
+            "settings": {
+                "allowTransparent": false
+            },
+            "sniffing": {
+                "destOverride": [
+                    "http",
+                    "tls",
+                    "quic"
+                ],
+                "enabled": true,
+                "routeOnly": true
+            },
+            "tag": "http"
+        }
+    ],
+    "log": {
+        "loglevel": "warning"
+    },
+    "meta": null,
+    "observatory": {
+        "enableConcurrency": true,
+        "probeInterval": "2m",
+        "probeUrl": "https://www.google.com/generate_204",
+        "subjectSelector": [
+            "cand-01-dsHxI6koKh",
+            "cand-03-9pz5OVI1ng"
+        ]
+    },
+    "outbounds": [
+        {
+            "protocol": "vless",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "179.254.90.72",
+                        "port": 443,
+                        "users": [
+                            {
+                                "encryption": "none",
+                                "flow": "xtls-rprx-vision",
+                                "id": "9e642428-13e7-4889-920e-cbcf7298b92a"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "realitySettings": {
+                    "fingerprint": "edge",
+                    "publicKey": "10rVZPoOUP1TlQviIAsQ_jAROX0fRQxH0C92nq_zGQc",
+                    "serverName": "7bca29df4f20.j.cloudfront.hls.ttvnw.net",
+                    "shortId": "43dcff53849b81e6",
+                    "show": false
+                },
+                "security": "reality",
+                "tcpSettings": {
+                }
+            },
+            "tag": "cand-01-dsHxI6koKh"
+        },
+        {
+            "protocol": "vless",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "89.125.99.10",
+                        "port": 443,
+                        "users": [
+                            {
+                                "encryption": "none",
+                                "id": "9e642428-13e7-4889-920e-cbcf7298b92a"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "grpcSettings": {
+                    "mode": "gun",
+                    "serviceName": "x5.lk.v1.AccountService"
+                },
+                "network": "grpc",
+                "security": "tls",
+                "tlsSettings": {
+                    "fingerprint": "edge",
+                    "pinnedPeerCertSha256": "E8:1F:40:BB:B2:AA:AA:4D:C4:50:06:A0:3C:BA:A4:3D:2D:62:37:C2:34:2F:A1:10:0A:97:CF:CE:F5:5F:8D:58",
+                    "serverName": "lk.x5.ru"
+                }
+            },
+            "tag": "cand-03-9pz5OVI1ng"
+        },
+        {
+            "protocol": "freedom",
+            "settings": {
+                "domainStrategy": "UseIPv4"
+            },
+            "tag": "direct"
+        },
+        {
+            "protocol": "blackhole",
+            "tag": "block"
+        }
+    ],
+    "remarks": "🇪🇺 Авто | Самый быстрый",
+    "routing": {
+        "balancers": [
+            {
+                "fallbackTag": "cand-01-dsHxI6koKh",
+                "selector": [
+                    "cand-01-dsHxI6koKh",
+                    "cand-03-9pz5OVI1ng"
+                ],
+                "strategy": {
+                    "settings": {
+                        "baselines": [
+                            "2s"
+                        ],
+                        "costs": [
+                            {
+                                "match": "cand-03-9pz5OVI1ng",
+                                "regexp": false,
+                                "value": 100000
+                            }
+                        ],
+                        "expected": 1,
+                        "maxRTT": "2s"
+                    },
+                    "type": "leastLoad"
+                },
+                "tag": "bal_price"
+            }
+        ],
+        "domainMatcher": "hybrid",
+        "domainStrategy": "IPIfNonMatch",
+        "rules": [
+            {
+                "balancerTag": "bal_price",
+                "domain": [
+                    "domain:2ip.ru"
+                ],
+                "type": "field"
+            },
+            {
+                "outboundTag": "block",
+                "protocol": [
+                    "quic"
+                ],
+                "type": "field"
+            },
+            {
+                "outboundTag": "direct",
+                "protocol": [
+                    "bittorrent"
+                ],
+                "type": "field"
+            },
+            {
+                "domain": [
+                    "max.ru",
+                    "geosite:category-ru"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "balancerTag": "bal_price",
+                "inboundTag": [
+                    "socks",
+                    "http"
+                ],
+                "network": "tcp,udp",
+                "type": "field"
+            }
+        ]
+    }
+}
