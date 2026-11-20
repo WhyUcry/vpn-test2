@@ -1,0 +1,597 @@
+{
+    "dns": {
+        "queryStrategy": "UseIPv4",
+        "servers": [
+            "1.1.1.1",
+            "8.8.8.8",
+            "8.8.4.4"
+        ]
+    },
+    "inbounds": [
+        {
+            "listen": "127.0.0.1",
+            "port": 10808,
+            "protocol": "socks",
+            "settings": {
+                "auth": "noauth",
+                "udp": true
+            },
+            "sniffing": {
+                "destOverride": [
+                    "http",
+                    "tls",
+                    "quic"
+                ],
+                "enabled": true,
+                "routeOnly": true
+            },
+            "tag": "socks"
+        }
+    ],
+    "log": {
+        "loglevel": "warning"
+    },
+    "meta": {
+        "routingTags": [
+            "auto-route",
+            "universal"
+        ]
+    },
+    "observatory": {
+        "enableConcurrency": true,
+        "probeInterval": "1m",
+        "probeUrl": "http://health.mantaray-core/",
+        "subjectSelector": [
+            "cand-01-OvPa7FAq3o",
+            "cand-02-dNjhwMVqHJ",
+            "cand-03-XjrWUs7x6e",
+            "cand-07-9PmWvGB6kb",
+            "cand-08-pemq87KSMx",
+            "cand-09-rQnTl61Dqq",
+            "udp-cand-01-OvPa7FAq3o",
+            "udp-cand-02-dNjhwMVqHJ",
+            "udp-cand-03-XjrWUs7x6e",
+            "udp-cand-07-9PmWvGB6kb",
+            "udp-cand-08-pemq87KSMx",
+            "udp-cand-09-rQnTl61Dqq"
+        ]
+    },
+    "outbounds": [
+        {
+            "protocol": "vless",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "193.124.94.153",
+                        "port": 443,
+                        "users": [
+                            {
+                                "encryption": "none",
+                                "flow": "xtls-rprx-vision",
+                                "id": "89f55644-6d2c-4e65-8cab-ff72f2d78746"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "realitySettings": {
+                    "fingerprint": "qq",
+                    "publicKey": "lxTQST37knG1eCPA0UscdPHzTmSnMgito5r4o0vZils",
+                    "serverName": "promo-digital.wb.ru",
+                    "shortId": "4e9b7a1c5f3d2e68",
+                    "spiderX": "/"
+                },
+                "security": "reality",
+                "tcpSettings": {
+                    "header": {
+                        "type": "none"
+                    }
+                }
+            },
+            "tag": "cand-01-OvPa7FAq3o"
+        },
+        {
+            "protocol": "vless",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "185.70.223.43",
+                        "port": 443,
+                        "users": [
+                            {
+                                "encryption": "none",
+                                "flow": "xtls-rprx-vision",
+                                "id": "89f55644-6d2c-4e65-8cab-ff72f2d78746"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "realitySettings": {
+                    "fingerprint": "qq",
+                    "publicKey": "n6uqg76Ky-Vl-HUDF_iwZTaK3L_iQ_YoFP92U8PPYS0",
+                    "serverName": "conf.emaar.ru",
+                    "shortId": "6d2a8e5f1b9c3704",
+                    "spiderX": "/"
+                },
+                "security": "reality",
+                "tcpSettings": {
+                    "header": {
+                        "type": "none"
+                    }
+                }
+            },
+            "tag": "cand-02-dNjhwMVqHJ"
+        },
+        {
+            "protocol": "vless",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "194.87.242.41",
+                        "port": 443,
+                        "users": [
+                            {
+                                "encryption": "none",
+                                "flow": "xtls-rprx-vision",
+                                "id": "89f55644-6d2c-4e65-8cab-ff72f2d78746"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "realitySettings": {
+                    "fingerprint": "qq",
+                    "publicKey": "ub1PHBkdqrCahRc4rgavIBm9EvIDWrZi0ff_OvEv8FU",
+                    "serverName": "stream.selectus.ru",
+                    "shortId": "b0f839d2a5c7e146",
+                    "spiderX": "/"
+                },
+                "security": "reality",
+                "tcpSettings": {
+                    "header": {
+                        "type": "none"
+                    }
+                }
+            },
+            "tag": "cand-03-XjrWUs7x6e"
+        },
+        {
+            "protocol": "vless",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "91.215.43.168",
+                        "port": 443,
+                        "users": [
+                            {
+                                "encryption": "none",
+                                "id": "89f55644-6d2c-4e65-8cab-ff72f2d78746"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "xhttp",
+                "security": "tls",
+                "tlsSettings": {
+                    "alpn": [
+                        "http/1.1",
+                        "h2"
+                    ],
+                    "fingerprint": "edge",
+                    "pinnedPeerCertSha256": "16c880818ae55937990617ba393568371fa1cce1d144dea2079e370a92a76b3b",
+                    "serverName": "static.rtbcdn.ru"
+                },
+                "xhttpSettings": {
+                    "host": "static.rtbcdn.ru",
+                    "mode": "packet-up",
+                    "path": "/xhttp",
+                    "scMaxEachPostBytes": "500000-1000000",
+                    "scMinPostsIntervalMs": "30-50",
+                    "xPaddingBytes": "100-1000",
+                    "xmux": {
+                        "cMaxReuseTimes": "64-128",
+                        "hKeepAlivePeriod": 45,
+                        "hMaxRequestTimes": "50000-60000",
+                        "hMaxReusableSecs": 300,
+                        "maxConcurrency": 4,
+                        "maxConnections": 0
+                    }
+                }
+            },
+            "tag": "cand-07-9PmWvGB6kb"
+        },
+        {
+            "protocol": "vless",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "91.215.43.168",
+                        "port": 443,
+                        "users": [
+                            {
+                                "encryption": "none",
+                                "id": "89f55644-6d2c-4e65-8cab-ff72f2d78746"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "xhttp",
+                "security": "tls",
+                "tlsSettings": {
+                    "alpn": [
+                        "http/1.1",
+                        "h2"
+                    ],
+                    "fingerprint": "edge",
+                    "pinnedPeerCertSha256": "16c880818ae55937990617ba393568371fa1cce1d144dea2079e370a92a76b3b",
+                    "serverName": "static.rtbcdn.ru"
+                },
+                "xhttpSettings": {
+                    "host": "static.rtbcdn.ru",
+                    "mode": "stream-up",
+                    "path": "/xhttp",
+                    "scMaxEachPostBytes": "500000-1000000",
+                    "scMinPostsIntervalMs": "30-50",
+                    "xPaddingBytes": "100-1000",
+                    "xmux": {
+                        "cMaxReuseTimes": 0,
+                        "hKeepAlivePeriod": 20,
+                        "hMaxRequestTimes": 0,
+                        "hMaxReusableSecs": 0,
+                        "maxConcurrency": 4,
+                        "maxConnections": 0
+                    }
+                }
+            },
+            "tag": "udp-cand-07-9PmWvGB6kb"
+        },
+        {
+            "protocol": "vless",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "178.248.232.105",
+                        "port": 55443,
+                        "users": [
+                            {
+                                "encryption": "none",
+                                "flow": "xtls-rprx-vision",
+                                "id": "89f55644-6d2c-4e65-8cab-ff72f2d78746"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "realitySettings": {
+                    "fingerprint": "qq",
+                    "publicKey": "UoWXZIbLDIDA1opu4ekUYLNWgci5gLgghMJ07ApYTGo",
+                    "serverName": "rutube.ru",
+                    "shortId": "228c1a2e913d1f05",
+                    "spiderX": "/"
+                },
+                "security": "reality",
+                "tcpSettings": {
+                    "header": {
+                        "type": "none"
+                    }
+                }
+            },
+            "tag": "cand-08-pemq87KSMx"
+        },
+        {
+            "protocol": "vless",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "178.248.232.105",
+                        "port": 55443,
+                        "users": [
+                            {
+                                "encryption": "none",
+                                "flow": "xtls-rprx-vision",
+                                "id": "89f55644-6d2c-4e65-8cab-ff72f2d78746"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "realitySettings": {
+                    "fingerprint": "qq",
+                    "publicKey": "UoWXZIbLDIDA1opu4ekUYLNWgci5gLgghMJ07ApYTGo",
+                    "serverName": "rutube.ru",
+                    "shortId": "228c1a2e913d1f05",
+                    "spiderX": "/"
+                },
+                "security": "reality",
+                "tcpSettings": {
+                    "header": {
+                        "type": "none"
+                    }
+                }
+            },
+            "tag": "cand-09-rQnTl61Dqq"
+        },
+        {
+            "protocol": "freedom",
+            "tag": "direct"
+        },
+        {
+            "protocol": "blackhole",
+            "tag": "block"
+        }
+    ],
+    "remarks": "🇪🇺 Автовыбор Белые списки 3",
+    "routing": {
+        "balancers": [
+            {
+                "fallbackTag": "cand-01-OvPa7FAq3o",
+                "selector": [
+                    "cand-01-OvPa7FAq3o",
+                    "cand-02-dNjhwMVqHJ",
+                    "cand-03-XjrWUs7x6e",
+                    "cand-07-9PmWvGB6kb",
+                    "cand-08-pemq87KSMx",
+                    "cand-09-rQnTl61Dqq",
+                    "udp-cand-01-OvPa7FAq3o",
+                    "udp-cand-02-dNjhwMVqHJ",
+                    "udp-cand-03-XjrWUs7x6e",
+                    "udp-cand-07-9PmWvGB6kb",
+                    "udp-cand-08-pemq87KSMx",
+                    "udp-cand-09-rQnTl61Dqq"
+                ],
+                "strategy": {
+                    "settings": {
+                        "baselines": [
+                            "1m"
+                        ],
+                        "costs": [
+                            {
+                                "match": "cand-01-OvPa7FAq3o",
+                                "regexp": false,
+                                "value": 0
+                            },
+                            {
+                                "match": "cand-02-dNjhwMVqHJ",
+                                "regexp": false,
+                                "value": 1000000000
+                            },
+                            {
+                                "match": "cand-03-XjrWUs7x6e",
+                                "regexp": false,
+                                "value": 2000000000
+                            },
+                            {
+                                "match": "cand-07-9PmWvGB6kb",
+                                "regexp": false,
+                                "value": 6000000000
+                            },
+                            {
+                                "match": "cand-08-pemq87KSMx",
+                                "regexp": false,
+                                "value": 7000000000
+                            },
+                            {
+                                "match": "cand-09-rQnTl61Dqq",
+                                "regexp": false,
+                                "value": 8000000000
+                            }
+                        ],
+                        "expected": 1,
+                        "maxRTT": "2s"
+                    },
+                    "type": "leastLoad"
+                },
+                "tag": "bal_price"
+            },
+            {
+                "fallbackTag": "cand-01-OvPa7FAq3o",
+                "selector": [
+                    "udp-cand-01-OvPa7FAq3o",
+                    "udp-cand-02-dNjhwMVqHJ",
+                    "udp-cand-03-XjrWUs7x6e",
+                    "udp-cand-07-9PmWvGB6kb",
+                    "udp-cand-08-pemq87KSMx",
+                    "udp-cand-09-rQnTl61Dqq"
+                ],
+                "strategy": {
+                    "settings": {
+                        "baselines": [
+                            "1m"
+                        ],
+                        "costs": [
+                            {
+                                "match": "cand-01-OvPa7FAq3o",
+                                "regexp": false,
+                                "value": 0
+                            },
+                            {
+                                "match": "cand-02-dNjhwMVqHJ",
+                                "regexp": false,
+                                "value": 1000000000
+                            },
+                            {
+                                "match": "cand-03-XjrWUs7x6e",
+                                "regexp": false,
+                                "value": 2000000000
+                            },
+                            {
+                                "match": "cand-07-9PmWvGB6kb",
+                                "regexp": false,
+                                "value": 6000000000
+                            },
+                            {
+                                "match": "cand-08-pemq87KSMx",
+                                "regexp": false,
+                                "value": 7000000000
+                            },
+                            {
+                                "match": "cand-09-rQnTl61Dqq",
+                                "regexp": false,
+                                "value": 8000000000
+                            }
+                        ],
+                        "expected": 1,
+                        "maxRTT": "2s"
+                    },
+                    "type": "leastLoad"
+                },
+                "tag": "bal_price-udp"
+            }
+        ],
+        "domainMatcher": "hybrid",
+        "domainStrategy": "AsIs",
+        "rules": [
+            {
+                "balancerTag": "bal_price",
+                "domain": [
+                    "domain:vpn.ecobuy.ltd",
+                    "domain:res.mycdn-me.ru",
+                    "domain:app.shukafish.site",
+                    "domain:api.shukafish.site",
+                    "domain:cdn.shukafish.site",
+                    "domain:media.shukafish.site",
+                    "domain:web.shukafish.site",
+                    "domain:portal.shukaclub.site",
+                    "domain:admin.shukaclub.site",
+                    "domain:static.shukaclub.site",
+                    "domain:assets.shukaclub.site",
+                    "domain:files.shukaclub.site",
+                    "domain:blog.shukalake.site",
+                    "domain:news.shukalake.site",
+                    "domain:docs.shukalake.site",
+                    "domain:help.shukalake.site",
+                    "domain:support.shukalake.site",
+                    "domain:status.shukariver.site",
+                    "domain:monitor.shukariver.site",
+                    "domain:metrics.shukariver.site",
+                    "domain:logs.shukariver.site",
+                    "domain:health.shukariver.site",
+                    "domain:auth.shukalove.site",
+                    "domain:login.shukalove.site",
+                    "domain:account.shukalove.site",
+                    "domain:profile.shukalove.site",
+                    "domain:members.shukalove.site",
+                    "domain:dashboard.shukalife.site",
+                    "domain:panel.shukalife.site",
+                    "domain:console.shukalife.site",
+                    "domain:manage.shukalife.site",
+                    "domain:control.shukalife.site",
+                    "domain:search.shukahunt.site",
+                    "domain:catalog.shukahunt.site",
+                    "domain:store.shukahunt.site",
+                    "domain:shop.shukahunt.site",
+                    "domain:market.shukahunt.site",
+                    "domain:mail.shukacatch.site",
+                    "domain:smtp.shukacatch.site",
+                    "domain:imap.shukacatch.site",
+                    "domain:pop.shukacatch.site",
+                    "domain:webmail.shukacatch.site",
+                    "domain:dev.shukabait.site",
+                    "domain:test.shukabait.site",
+                    "domain:stage.shukabait.site",
+                    "domain:preview.shukabait.site",
+                    "domain:sandbox.shukabait.site",
+                    "domain:mobile.shukaspin.site",
+                    "domain:music.shukaspin.site",
+                    "domain:video.shukaspin.site",
+                    "domain:images.shukaspin.site",
+                    "domain:download.shukaspin.site"
+                ],
+                "ruleTag": "shuka-subscription-hosts",
+                "type": "field"
+            },
+            {
+                "domain": [
+                    "domain:ru",
+                    "domain:su",
+                    "domain:xn--p1ai",
+                    "domain:moscow",
+                    "domain:ya.cc",
+                    "domain:yandex.com",
+                    "domain:yandex.net",
+                    "domain:yango.com",
+                    "domain:vk.com",
+                    "domain:vk.cc",
+                    "domain:mvk.com",
+                    "domain:mycdn.me",
+                    "domain:my.com",
+                    "domain:my.games",
+                    "domain:ok.me",
+                    "domain:kaspersky.com",
+                    "domain:ozon.com",
+                    "domain:ozon.by",
+                    "domain:ozon.kz",
+                    "domain:wildberries.by",
+                    "domain:wildberries.kz",
+                    "domain:2gis.com",
+                    "domain:magnit.com",
+                    "domain:fix-price.com",
+                    "domain:x5.tech",
+                    "domain:megafon.com",
+                    "domain:moex.com",
+                    "domain:okko.tv",
+                    "domain:okko.sport",
+                    "domain:boosty.to",
+                    "domain:lenta.com",
+                    "domain:meduza.io",
+                    "domain:premier.one",
+                    "domain:hh.by",
+                    "domain:hh.kz",
+                    "domain:mosmetro.tech",
+                    "domain:avs.io",
+                    "domain:rbsgate.com"
+                ],
+                "outboundTag": "direct",
+                "type": "field"
+            },
+            {
+                "outboundTag": "direct",
+                "protocol": [
+                    "bittorrent"
+                ],
+                "type": "field"
+            },
+            {
+                "network": "udp",
+                "outboundTag": "block",
+                "port": "443",
+                "ruleTag": "shuka-block-quic",
+                "type": "field"
+            },
+            {
+                "balancerTag": "bal_price-udp",
+                "inboundTag": [
+                    "socks",
+                    "http"
+                ],
+                "network": "udp",
+                "ruleTag": "shuka-udp-split",
+                "type": "field"
+            },
+            {
+                "balancerTag": "bal_price",
+                "inboundTag": [
+                    "socks",
+                    "http"
+                ],
+                "network": "tcp,udp",
+                "type": "field"
+            }
+        ]
+    }
+}
