@@ -38,6 +38,7 @@
   <h1>Скапиздончик vpn</h1>
   <p id="status">Нажмите кнопку — подписка добавится в Happ автоматически.</p>
   <a class="btn" id="add" href="#">Добавить в Happ</a>
+  <a class="btn ghost" id="add-full" href="#">Добавить «Белые списки» (каскады)</a>
   <button class="btn ghost" id="copy" type="button">Скопировать ссылку</button>
   <p class="hint">Если Happ не открылся — установите его и нажмите кнопку снова.<br>
   <code id="url"></code></p>
@@ -45,6 +46,7 @@
 (function () {
   // Happ принимает прямую ссылку вида happ://add/<URL подписки> (без base64)
   var SUB_PATH = 'output/sub.txt';
+  var JSON_PATH = 'output/sub.json';
 
   // Счётчик устройств. GitHub Pages не отдаёт статистику запросов,
   // поэтому считаем сами: каждое устройство при добавлении подписки
@@ -55,14 +57,18 @@
   var DEVICE_KEY = 'skapidzonchik-sub-added';
 
   var base = new URL(SUB_PATH, location.href).href;
+  var jsonUrl = new URL(JSON_PATH, location.href).href;
   var deep = 'happ://add/' + base;
+  var deepFull = 'happ://add/' + jsonUrl;
 
   var addBtn = document.getElementById('add');
+  var addFullBtn = document.getElementById('add-full');
   var copyBtn = document.getElementById('copy');
   var status = document.getElementById('status');
   var urlEl = document.getElementById('url');
 
   addBtn.href = deep;
+  addFullBtn.href = deepFull;
   urlEl.textContent = base;
 
   function counterUrl(action) {
@@ -141,10 +147,14 @@
         { команда: 'vpnSub.help()', описание: 'Показать эту справку' },
       ]);
       console.log('Прямой адрес счётчика: ' + counterUrl('get'));
+      console.log('Подписка-список: ' + base);
+      console.log('Подписка с каскадами: ' + jsonUrl);
       return 'Готово';
     },
     url: base,
+    jsonUrl: jsonUrl,
     deepLink: deep,
+    deepLinkFull: deepFull,
   };
   window.vpnSub = vpnSub;
 
@@ -152,6 +162,7 @@
   console.log('Консоль: vpnSub.count() — количество устройств, vpnSub.help() — все команды.');
 
   addBtn.addEventListener('click', function () { registerDevice(false); });
+  addFullBtn.addEventListener('click', function () { registerDevice(false); });
 
   copyBtn.addEventListener('click', function () {
     var done = function () {

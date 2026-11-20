@@ -50,8 +50,10 @@ jobs:
           mkdir -p site/output
           cp output/sub.txt site/sub.txt
           cp output/subscription.txt site/subscription.txt
+          cp output/sub.json site/sub.json
           cp output/sub.txt site/output/sub.txt
           cp output/subscription.txt site/output/subscription.txt
+          cp output/sub.json site/output/sub.json
           cp index.html site/index.html
           touch site/.nojekyll
 

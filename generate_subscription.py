@@ -126,9 +126,79 @@ def dedupe_key(outbound: dict):
     )
 
 
+def find_internal_tags(data: dict) -> set:
+    """Теги outbound'ов, которые являются внутренними хопами каскада.
+
+    Такие серверы доступны только через loopback-инбаунды (entry-tier2 и т.п.),
+    то есть к ним подключается предыдущий сервер цепочки, а не клиент.
+    Выставлять их отдельными серверами в подписке нельзя — они не работают.
+    """
+    routing = data.get("routing") or {}
+    balancers = {b.get("tag"): b for b in routing.get("balancers") or []}
+
+    # Инбаунды, на которые завёрнут loopback (внутренние точки входа каскада)
+    loopback_inbounds = set()
+    for outbound in data.get("outbounds") or []:
+        if outbound.get("protocol") == "loopback":
+            tag = (outbound.get("settings") or {}).get("inboundTag")
+            if tag:
+                loopback_inbounds.add(tag)
+
+    if not loopback_inbounds:
+        return set()
+
+    # Балансировщики, доступные только изнутри каскада
+    internal_balancers = set()
+    entry_balancers = set()
+    for rule in routing.get("rules") or []:
+        balancer_tag = rule.get("balancerTag")
+        if not balancer_tag:
+            continue
+        inbound_tags = rule.get("inboundTag") or []
+        if inbound_tags and all(t in loopback_inbounds for t in inbound_tags):
+            internal_balancers.add(balancer_tag)
+        else:
+            entry_balancers.add(balancer_tag)
+
+    # Переходы по fallbackTag тоже ведут внутрь каскада
+    changed = True
+    while changed:
+        changed = False
+        for tag in list(internal_balancers):
+            fallback = (balancers.get(tag) or {}).get("fallbackTag")
+            if fallback in balancers and fallback not in internal_balancers:
+                internal_balancers.add(fallback)
+                changed = True
+
+    internal_balancers -= entry_balancers
+    if not internal_balancers:
+        return set()
+
+    internal_tags = set()
+    for tag in internal_balancers:
+        for selector in (balancers.get(tag) or {}).get("selector") or []:
+            for outbound in data.get("outbounds") or []:
+                out_tag = outbound.get("tag") or ""
+                if out_tag.startswith(selector):
+                    internal_tags.add(out_tag)
+
+    # Тег, выбранный и внешним балансировщиком, остаётся точкой входа
+    entry_tags = set()
+    for tag in entry_balancers:
+        for selector in (balancers.get(tag) or {}).get("selector") or []:
+            for outbound in data.get("outbounds") or []:
+                out_tag = outbound.get("tag") or ""
+                if out_tag.startswith(selector):
+                    entry_tags.add(out_tag)
+
+    return internal_tags - entry_tags
+
+
 def collect_links():
     """Читает configs/*.json и возвращает ссылки в порядке файлов в папке.
 
+    В подписку попадают только точки входа: внутренние хопы каскадов
+    (tier2/tier3) из плоского списка исключаются — напрямую они не работают.
     Дубликаты не удаляются: если один и тот же сервер встречается в нескольких
     конфигах, в подписке он будет столько же раз.
     """
@@ -152,10 +222,10 @@ def collect_links():
             continue
 
         remarks = (data.get("remarks") or path.stem).strip()
-        outbounds = data.get("outbounds") or []
+        internal_tags = find_internal_tags(data)
 
         vless_outbounds = []
-        for outbound in outbounds:
+        for outbound in data.get("outbounds") or []:
             protocol = outbound.get("protocol")
             if protocol in SKIP_PROTOCOLS:
                 continue
@@ -170,6 +240,9 @@ def collect_links():
                 outbound["settings"]["vnext"][0]
             except (KeyError, IndexError):
                 print(f"[!] {path.name}: пустой vnext у {outbound.get('tag')}", file=sys.stderr)
+                continue
+            if outbound.get("tag") in internal_tags:
+                # Внутренний хоп каскада — только через полный JSON-конфиг
                 continue
             vless_outbounds.append(outbound)
 
@@ -194,6 +267,22 @@ def collect_links():
     return links, len(files), skipped
 
 
+def collect_json_configs():
+    """Полные JSON-конфиги для Happ: каскады работают только целиком."""
+    configs = []
+    if not CONFIG_DIR.is_dir():
+        return configs
+    for path in sorted(CONFIG_DIR.glob("*.json"), key=lambda p: p.name):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8-sig"))
+        except json.JSONDecodeError:
+            continue
+        if not data.get("remarks"):
+            data["remarks"] = path.stem
+        configs.append(data)
+    return configs
+
+
 def generate():
     links, total_files, skipped = collect_links()
     OUT_DIR.mkdir(exist_ok=True)
@@ -214,6 +303,16 @@ def generate():
     (OUT_DIR / "sub").write_text(encoded, encoding="ascii", newline="\n")
     (OUT_DIR / "sub.txt").write_text(encoded, encoding="ascii", newline="\n")
 
+    # Полные JSON-конфиги: единственный способ сохранить каскады
+    # (tier2/tier3 через loopback и балансировщики). Happ передаёт такой
+    # массив в Xray 1:1, поэтому «Белые списки» работают как задумано.
+    configs = collect_json_configs()
+    (OUT_DIR / "sub.json").write_text(
+        json.dumps(configs, ensure_ascii=False, separators=(",", ":")),
+        encoding="utf-8",
+        newline="\n",
+    )
+
     return links, total_files, skipped
 
 
@@ -228,6 +327,7 @@ def main():
     print()
     print(f"Готово: {OUT_DIR / 'subscription.txt'}")
     print(f"Готово: {OUT_DIR / 'sub'} (base64-подписка)")
+    print(f"Готово: {OUT_DIR / 'sub.json'} (полные конфиги с каскадами)")
 
 
 if __name__ == "__main__":

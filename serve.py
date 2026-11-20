@@ -45,39 +45,54 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = self.path.split("?", 1)[0].rstrip("/") or "/"
 
-        if path not in ("/", "/sub", "/sub.txt"):
+        if path not in ("/", "/sub", "/sub.txt", "/sub.json"):
             self.send_error(404, "Not found")
             return
 
         links, _, _ = gen.generate()
-        plain = "\n".join(links) + "\n"
-        encoded = base64.b64encode(plain.encode("utf-8")).decode("ascii")
 
-        if path == "/sub":
-            body = encoded.encode("ascii")
-            content_type = "text/plain; charset=utf-8"
-        elif path == "/sub.txt":
-            body = plain.encode("utf-8")
-            content_type = "text/plain; charset=utf-8"
+        if path == "/sub.json":
+            body = (gen.OUT_DIR / "sub.json").read_bytes()
+            content_type = "application/json; charset=utf-8"
         else:
-            items = "\n".join(
-                f'<li><a href="{link}">{link.split("#", 1)[-1]}</a></li>'
-                for link in links
+            header = (
+                "#profile-title: base64:"
+                + base64.b64encode(gen.SUBSCRIPTION_TITLE.encode("utf-8")).decode("ascii")
+                + "\n#profile-update-interval: %d\n" % gen.UPDATE_INTERVAL_HOURS
             )
-            sub_url = f"http://{self.headers.get('Host', '127.0.0.1')}/sub.txt"
-            happ = f"happ://add/{sub_url}"
-            html = f"""<!doctype html>
+            plain = header + "\n".join(links) + "\n"
+            encoded = base64.b64encode(plain.encode("utf-8")).decode("ascii")
+
+            if path == "/sub":
+                body = encoded.encode("ascii")
+                content_type = "text/plain; charset=utf-8"
+            elif path == "/sub.txt":
+                body = plain.encode("utf-8")
+                content_type = "text/plain; charset=utf-8"
+            else:
+                items = "\n".join(
+                    f'<li><a href="{link}">{link.split("#", 1)[-1]}</a></li>'
+                    for link in links
+                )
+                host = self.headers.get("Host", "127.0.0.1")
+                sub_url = f"http://{host}/sub.txt"
+                json_url = f"http://{host}/sub.json"
+                happ = f"happ://add/{sub_url}"
+                happ_full = f"happ://add/{json_url}"
+                html = f"""<!doctype html>
 <html lang="ru"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{TITLE}</title>
 <h1>{TITLE}</h1>
 <p>Серверов: {len(links)}</p>
 <p><a href="{happ}">Добавить в Happ</a></p>
-<p>Ссылка для VPN-клиента: <code>{sub_url}</code></p>
+<p><a href="{happ_full}">Добавить «Белые списки» (каскады)</a></p>
+<p>Ссылка для VPN-клиента: <code>{sub_url}</code><br>
+Каскады: <code>{json_url}</code></p>
 <ul>{items}</ul>
 </html>"""
-            body = html.encode("utf-8")
-            content_type = "text/html; charset=utf-8"
+                body = html.encode("utf-8")
+                content_type = "text/html; charset=utf-8"
 
         self.send_response(200)
         self.send_header("Content-Type", content_type)
