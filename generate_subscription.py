@@ -21,7 +21,7 @@ OUT_DIR = ROOT / "output"
 # Порядок вывода серверов в подписке — как файлы лежат в папке configs/
 SKIP_PROTOCOLS = {"freedom", "blackhole", "loopback", "dns"}
 
-SUBSCRIPTION_TITLE = "Скапиздончик vpn"
+SUBSCRIPTION_TITLE = "(•˕ •マⳊДудоня VPN"
 UPDATE_INTERVAL_HOURS = 12
 
 
@@ -217,7 +217,10 @@ def collect_links():
         try:
             data = json.loads(path.read_text(encoding="utf-8-sig"))
         except json.JSONDecodeError as exc:
-            print(f"[!] {path.name}: битый JSON ({exc})", file=sys.stderr)
+            if path.stat().st_size == 0:
+                print(f"[!] {path.name}: файл пустой — пропущен", file=sys.stderr)
+            else:
+                print(f"[!] {path.name}: битый JSON ({exc})", file=sys.stderr)
             skipped += 1
             continue
 

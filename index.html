@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0f1115">
-<title>Скапиздончик vpn</title>
+<title>(•˕ •マⳊДудоня VPN</title>
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
@@ -35,7 +35,7 @@
 <body>
 <main>
   <div class="logo">🛡️</div>
-  <h1>Скапиздончик vpn</h1>
+  <h1>(•˕ •マⳊДудоня VPN</h1>
   <p id="status">Нажмите кнопку — подписка добавится в Happ автоматически.</p>
   <a class="btn" id="add" href="#">Добавить в Happ</a>
   <button class="btn ghost" id="copy" type="button">Скопировать ссылку</button>
@@ -48,6 +48,12 @@
   // каскады «Белых списков» (p1 → tier2 → tier3 через loopback).
   var SUB_PATH = 'output/sub.json';
 
+  // Название подписки. GitHub Pages не умеет отдавать заголовок profile-title,
+  // а JSON-массив не может содержать строку #profile-title (это сломает JSON),
+  // поэтому имя передаём фрагментом ссылки — так документировано в Happ:
+  //   https://url.com/sub#Your_TITLE
+  var TITLE = '(•˕ •マⳊДудоня VPN';
+
   // Счётчик устройств. GitHub Pages не отдаёт статистику запросов,
   // поэтому считаем сами: каждое устройство при добавлении подписки
   // один раз увеличивает счётчик (флаг хранится в localStorage).
@@ -57,7 +63,8 @@
   var DEVICE_KEY = 'skapidzonchik-sub-added';
 
   var base = new URL(SUB_PATH, location.href).href;
-  var deep = 'happ://add/' + base;
+  var subUrl = base + '#' + encodeURIComponent(TITLE);
+  var deep = 'happ://add/' + subUrl;
 
   var addBtn = document.getElementById('add');
   var copyBtn = document.getElementById('copy');
@@ -87,7 +94,7 @@
 
   function logCount() {
     readCount().then(function (n) {
-      console.log('Устройств с подпиской «Скапиздончик vpn»: ' + n);
+      console.log('Устройств с подпиской «' + TITLE + '»: ' + n);
     }).catch(function (e) {
       console.warn('Не удалось получить количество устройств:', e);
     });
@@ -101,7 +108,7 @@
 
     return hitCount().then(function (n) {
       try { localStorage.setItem(DEVICE_KEY, '1'); } catch (e) {}
-      console.log('Устройство учтено. Всего устройств с подпиской «Скапиздончик vpn»: ' + n);
+      console.log('Устройство учтено. Всего устройств с подпиской «' + TITLE + '»: ' + n);
       return n;
     }).catch(function (e) {
       console.warn('Не удалось обновить счётчик устройств:', e);
@@ -117,7 +124,7 @@
   var vpnSub = {
     count: function () {
       return readCount().then(function (n) {
-        console.log('Устройств с подпиской «Скапиздончик vpn»: ' + n);
+        console.log('Устройств с подпиской «' + TITLE + '»: ' + n);
         return n;
       }).catch(function (e) {
         console.warn('Не удалось получить количество устройств:', e);
@@ -133,7 +140,7 @@
     },
     help: function () {
       console.log(
-        '%cПодписка «Скапиздончик vpn» — команды в консоли',
+        '%cПодписка «' + TITLE + '» — команды в консоли',
         'font-weight:bold'
       );
       console.table([
@@ -143,9 +150,10 @@
         { команда: 'vpnSub.help()', описание: 'Показать эту справку' },
       ]);
       console.log('Прямой адрес счётчика: ' + counterUrl('get'));
-      console.log('Ссылка на подписку: ' + base);
+      console.log('Ссылка на подписку: ' + subUrl);
       return 'Готово';
     },
+    title: TITLE,
     url: base,
     deepLink: deep,
   };
@@ -163,14 +171,14 @@
     };
     var fallback = function () {
       var ta = document.createElement('textarea');
-      ta.value = base;
+      ta.value = subUrl;
       document.body.appendChild(ta);
       ta.select();
-      try { document.execCommand('copy'); done(); } catch (e) { status.textContent = base; }
+      try { document.execCommand('copy'); done(); } catch (e) { status.textContent = subUrl; }
       document.body.removeChild(ta);
     };
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(base).then(done, fallback);
+      navigator.clipboard.writeText(subUrl).then(done, fallback);
     } else {
       fallback();
     }
