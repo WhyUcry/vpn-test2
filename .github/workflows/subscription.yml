@@ -6,6 +6,7 @@ on:
     paths:
       - "configs/**"
       - "generate_subscription.py"
+      - "index.html"
       - ".github/workflows/subscription.yml"
   workflow_dispatch:
 
