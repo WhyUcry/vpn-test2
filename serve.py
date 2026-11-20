@@ -75,10 +75,8 @@ class Handler(BaseHTTPRequestHandler):
                     for link in links
                 )
                 host = self.headers.get("Host", "127.0.0.1")
-                sub_url = f"http://{host}/sub.txt"
-                json_url = f"http://{host}/sub.json"
+                sub_url = f"http://{host}/sub.json"
                 happ = f"happ://add/{sub_url}"
-                happ_full = f"happ://add/{json_url}"
                 html = f"""<!doctype html>
 <html lang="ru"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -86,9 +84,7 @@ class Handler(BaseHTTPRequestHandler):
 <h1>{TITLE}</h1>
 <p>Серверов: {len(links)}</p>
 <p><a href="{happ}">Добавить в Happ</a></p>
-<p><a href="{happ_full}">Добавить «Белые списки» (каскады)</a></p>
-<p>Ссылка для VPN-клиента: <code>{sub_url}</code><br>
-Каскады: <code>{json_url}</code></p>
+<p>Ссылка для VPN-клиента: <code>{sub_url}</code></p>
 <ul>{items}</ul>
 </html>"""
                 body = html.encode("utf-8")
