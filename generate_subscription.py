@@ -195,7 +195,11 @@ def find_internal_tags(data: dict) -> set:
 
 
 def collect_links():
-    """Читает configs/*.json и возвращает ссылки в порядке файлов в папке.
+    """Читает configs/**/*.json и возвращает ссылки в порядке файлов в папке.
+
+    Конфиги разложены по подпапкам (LTE / Белые списки / Автовыбор / Страны),
+    поэтому обход рекурсивный — порядок в подписке остаётся алфавитным по имени
+    файла, независимо от того, в какой подпапке он лежит.
 
     В подписку попадают только точки входа: внутренние хопы каскадов
     (tier2/tier3) из плоского списка исключаются — напрямую они не работают.
@@ -205,7 +209,7 @@ def collect_links():
     if not CONFIG_DIR.is_dir():
         sys.exit(f"Не найдена папка с конфигами: {CONFIG_DIR}")
 
-    files = sorted(CONFIG_DIR.glob("*.json"), key=lambda p: p.name)
+    files = sorted(CONFIG_DIR.rglob("*.json"), key=lambda p: (p.name, str(p)))
     if not files:
         sys.exit(f"В {CONFIG_DIR} нет .json файлов")
 
@@ -275,7 +279,7 @@ def collect_json_configs():
     configs = []
     if not CONFIG_DIR.is_dir():
         return configs
-    for path in sorted(CONFIG_DIR.glob("*.json"), key=lambda p: p.name):
+    for path in sorted(CONFIG_DIR.rglob("*.json"), key=lambda p: (p.name, str(p))):
         try:
             data = json.loads(path.read_text(encoding="utf-8-sig"))
         except json.JSONDecodeError:
