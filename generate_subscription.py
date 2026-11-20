@@ -21,7 +21,7 @@ OUT_DIR = ROOT / "output"
 # Порядок вывода серверов в подписке — как файлы лежат в папке configs/
 SKIP_PROTOCOLS = {"freedom", "blackhole", "loopback", "dns"}
 
-SUBSCRIPTION_TITLE = "(•˕ •マⳊДудоня VPN"
+SUBSCRIPTION_TITLE = "(•˕ •マⳊ Дудоня VPN"
 UPDATE_INTERVAL_HOURS = 12
 
 

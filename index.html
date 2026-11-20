@@ -3,44 +3,193 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0f1115">
-<title>(•˕ •マⳊДудоня VPN</title>
+<meta name="theme-color" content="#ffddb8">
+<title>(•˕ •マⳊ Дудоня VPN</title>
 <style>
-  :root { color-scheme: dark; }
+  :root {
+    color-scheme: light;
+    --ink: #7a3b0f;
+    --muted: #a2744e;
+    --line: #ffe3c4;
+    --orange: #f97316;
+  }
   * { box-sizing: border-box; }
   body {
     margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    padding: 24px; background: radial-gradient(1200px 600px at 50% -10%, #1b2433, #0f1115 60%);
-    color: #e8ecf3; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    padding: 28px 18px 44px; overflow-x: hidden;
+    background: radial-gradient(900px 520px at 50% -12%, #fff6e6, #ffddb8 48%, #ffc69a 100%);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   }
-  main { width: 100%; max-width: 420px; text-align: center; }
-  .logo { font-size: 56px; line-height: 1; margin-bottom: 12px; }
-  h1 { font-size: 26px; margin: 0 0 8px; letter-spacing: .2px; }
-  p { margin: 0 0 20px; color: #9aa6b8; font-size: 15px; line-height: 1.5; }
+  /* кошачьи следы по фону */
+  .deco { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+  .deco span { position: absolute; font-size: 26px; opacity: .14; }
+  .deco span:nth-child(odd) { opacity: .19; }
+  main {
+    position: relative; width: 100%; max-width: 420px; text-align: center;
+    background: #fffdf9; border: 1px solid var(--line); border-radius: 28px;
+    padding: 26px 22px 22px;
+    box-shadow: 0 26px 60px rgba(196, 104, 42, .18), inset 0 2px 0 #fff2e2;
+  }
+  h1 { font-size: 26px; line-height: 1.25; margin: 0 0 8px; letter-spacing: .2px; font-weight: 800; }
+  p { margin: 0 0 20px; color: var(--muted); font-size: 15px; line-height: 1.5; }
+  /* кнопка + котёнок, выглядывающий из-за неё */
+  .cta { position: relative; padding-top: 104px; margin-bottom: 12px; }
+  .kitten, .paws { position: absolute; left: 50%; pointer-events: none; }
+  .kitten {
+    top: 0; margin-left: -80px; width: 160px; height: 130px; z-index: 0;
+    animation: peek 4s ease-in-out infinite;
+  }
+  .paws { top: 92px; margin-left: -80px; width: 160px; height: 40px; z-index: 2; }
+  @keyframes peek {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  @keyframes wag {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(12deg); }
+    75% { transform: rotate(-10deg); }
+  }
+  .tail {
+    transform-box: view-box;
+    transform-origin: 130px 90px;
+    animation: wag 1.8s ease-in-out infinite;
+  }
   .btn {
-    display: block; width: 100%; padding: 16px 20px; margin-bottom: 12px;
-    border-radius: 14px; border: 0; font-size: 17px; font-weight: 600; cursor: pointer;
-    background: linear-gradient(180deg, #4f8cff, #2f6ae0); color: #fff; text-decoration: none;
-    box-shadow: 0 8px 24px rgba(47, 106, 224, .35);
+    position: relative; z-index: 1;
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; padding: 18px 20px; border-radius: 18px; border: 0;
+    font-size: 17px; font-weight: 800; cursor: pointer; text-decoration: none;
+    background: linear-gradient(180deg, #ffa94d, #f97316); color: #fff;
+    box-shadow: 0 14px 28px rgba(249, 115, 22, .34), inset 0 1px 0 rgba(255, 255, 255, .45);
+    transition: transform .12s ease, box-shadow .12s ease;
   }
+  /* тень котёнка на кнопке — он стоит за ней, а не нарисован сверху */
+  .cta::before {
+    content: ""; position: absolute; left: 50%; top: 96px; margin-left: -56px;
+    width: 112px; height: 30px; border-radius: 50%; z-index: 0;
+    background: rgba(190, 90, 30, .18); filter: blur(8px);
+  }
+  .btn:hover { box-shadow: 0 18px 34px rgba(249, 115, 22, .42); }
   .btn:active { transform: translateY(1px); }
   .btn.ghost {
-    background: transparent; color: #cfd8e6; border: 1px solid #2b3446; box-shadow: none;
-    font-weight: 500; font-size: 15px; padding: 13px 20px;
+    background: #fff1e0; color: #b4622a; border: 2px solid #ffd9b5; box-shadow: none;
+    font-weight: 700; font-size: 15px; padding: 13px 20px;
   }
-  .hint { font-size: 13px; color: #7c8798; margin: 18px 0 0; }
-  code { font-size: 12px; color: #8fa4c4; word-break: break-all; }
+  .hint { font-size: 13px; color: #b08863; margin: 18px 0 0; line-height: 1.6; }
+  code {
+    display: inline-block; margin-top: 6px; padding: 3px 7px; border-radius: 7px;
+    background: #fff3e4; font-size: 11.5px; color: #c08552; word-break: break-all;
+  }
+  .paws-row { margin: 14px 0 0; font-size: 14px; opacity: .5; letter-spacing: 6px; }
+  @media (prefers-reduced-motion: reduce) {
+    .kitten, .tail { animation: none; }
+  }
 </style>
 </head>
 <body>
+<div class="deco" aria-hidden="true">
+  <span style="top:4%;left:5%;transform:rotate(-18deg)">🐾</span>
+  <span style="top:8%;right:7%;transform:rotate(24deg);font-size:32px">🐾</span>
+  <span style="top:16%;left:12%;transform:rotate(8deg);font-size:20px">🧡</span>
+  <span style="top:22%;right:14%;transform:rotate(-12deg)">🐾</span>
+  <span style="top:32%;left:3%;transform:rotate(-8deg);font-size:30px">🐈</span>
+  <span style="top:38%;right:2%;transform:rotate(10deg);font-size:26px">🐱</span>
+  <span style="top:48%;left:7%;transform:rotate(16deg);font-size:22px">🐟</span>
+  <span style="top:54%;right:8%;transform:rotate(-20deg);font-size:24px">🐾</span>
+  <span style="top:62%;left:4%;transform:rotate(-14deg);font-size:30px">😺</span>
+  <span style="top:68%;right:4%;transform:rotate(12deg);font-size:30px">😻</span>
+  <span style="bottom:20%;left:10%;transform:rotate(14deg);font-size:22px">🐾</span>
+  <span style="bottom:12%;right:12%;transform:rotate(-26deg)">🐈‍⬛</span>
+  <span style="bottom:6%;left:22%;transform:rotate(6deg);font-size:24px">🐾</span>
+  <span style="bottom:4%;right:26%;transform:rotate(-10deg);font-size:26px">🧶</span>
+  <span style="top:12%;left:32%;transform:rotate(-6deg);font-size:20px">✨</span>
+  <span style="top:8%;right:32%;transform:rotate(14deg);font-size:22px">✨</span>
+  <span style="top:80%;left:6%;transform:rotate(10deg);font-size:26px">🐾</span>
+  <span style="top:84%;right:6%;transform:rotate(-16deg);font-size:22px">🐟</span>
+</div>
 <main>
-  <div class="logo">🛡️</div>
-  <h1>(•˕ •マⳊДудоня VPN</h1>
+  <h1>(•˕ •マⳊ Дудоня VPN</h1>
   <p id="status">Нажмите кнопку — подписка добавится в Happ автоматически.</p>
-  <a class="btn" id="add" href="#">Добавить в Happ</a>
+
+  <div class="cta">
+    <!-- котёнок: голова за кнопкой, лапки поверх её края -->
+    <div class="kitten" aria-hidden="true">
+      <svg viewBox="0 0 160 130" width="160" height="130" overflow="visible">
+        <defs>
+          <linearGradient id="fur" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffce8a"/>
+            <stop offset="1" stop-color="#f59b4b"/>
+          </linearGradient>
+          <linearGradient id="earIn" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffc2cf"/>
+            <stop offset="1" stop-color="#ff9db0"/>
+          </linearGradient>
+        </defs>
+        <!-- хвост -->
+        <g class="tail">
+          <path d="M128 88 q28 -6 36 -28 q4 -14 -4 -20"
+                fill="none" stroke="#f59b4b" stroke-width="14" stroke-linecap="round"/>
+          <path d="M128 88 q28 -6 36 -28 q4 -14 -4 -20"
+                fill="none" stroke="#e07b39" stroke-width="3" stroke-linecap="round" opacity=".45"/>
+          <path d="M158 46 q6 -4 4 -10"
+                fill="none" stroke="#ffce8a" stroke-width="7" stroke-linecap="round" opacity=".8"/>
+        </g>
+        <!-- уши -->
+        <path d="M32 54 L26 14 L66 36 Z" fill="url(#fur)" stroke="#e07b39" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M128 54 L134 14 L94 36 Z" fill="url(#fur)" stroke="#e07b39" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M40 46 L37 26 L57 38 Z" fill="url(#earIn)"/>
+        <path d="M120 46 L123 26 L103 38 Z" fill="url(#earIn)"/>
+        <!-- голова -->
+        <ellipse cx="80" cy="74" rx="54" ry="46" fill="url(#fur)" stroke="#e07b39" stroke-width="3"/>
+        <!-- полоски -->
+        <path d="M80 30 q6 8 0 14" stroke="#e07b39" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".5"/>
+        <path d="M61 35 q5 8 1 13" stroke="#e07b39" stroke-width="3" fill="none" stroke-linecap="round" opacity=".4"/>
+        <path d="M99 35 q-5 8 -1 13" stroke="#e07b39" stroke-width="3" fill="none" stroke-linecap="round" opacity=".4"/>
+        <!-- глаза -->
+        <ellipse cx="61" cy="72" rx="8" ry="9.5" fill="#4a2c17"/>
+        <ellipse cx="99" cy="72" rx="8" ry="9.5" fill="#4a2c17"/>
+        <circle cx="64" cy="69" r="3" fill="#fff"/>
+        <circle cx="102" cy="69" r="3" fill="#fff"/>
+        <circle cx="58.5" cy="76" r="1.6" fill="#fff" opacity=".85"/>
+        <circle cx="96.5" cy="76" r="1.6" fill="#fff" opacity=".85"/>
+        <!-- щёчки -->
+        <ellipse cx="46" cy="88" rx="9" ry="6" fill="#ff9db0" opacity=".5"/>
+        <ellipse cx="114" cy="88" rx="9" ry="6" fill="#ff9db0" opacity=".5"/>
+        <!-- нос и рот -->
+        <path d="M74 84 h12 l-6 6 z" fill="#ff8fa3"/>
+        <path d="M80 90 v4 M80 94 q-7 6 -13 0 M80 94 q7 6 13 0"
+              stroke="#4a2c17" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        <!-- усы -->
+        <path d="M34 82 h14 M34 91 h14 M126 82 h-14 M126 91 h-14"
+              stroke="#e07b39" stroke-width="2" stroke-linecap="round" opacity=".65"/>
+      </svg>
+    </div>
+
+    <a class="btn" id="add" href="#">Добавить в Happ</a>
+
+    <div class="paws" aria-hidden="true">
+      <svg viewBox="0 0 160 40" width="160" height="40">
+        <g fill="#ffd8a8" stroke="#e07b39" stroke-width="3" stroke-linejoin="round">
+          <rect x="34" y="2" width="30" height="32" rx="15"/>
+          <rect x="96" y="2" width="30" height="32" rx="15"/>
+        </g>
+        <g fill="#ffb3c1">
+          <ellipse cx="43" cy="24" rx="3.6" ry="4.6"/>
+          <ellipse cx="52" cy="26" rx="3.6" ry="4.6"/>
+          <ellipse cx="61" cy="24" rx="3.6" ry="4.6"/>
+          <ellipse cx="105" cy="24" rx="3.6" ry="4.6"/>
+          <ellipse cx="114" cy="26" rx="3.6" ry="4.6"/>
+          <ellipse cx="123" cy="24" rx="3.6" ry="4.6"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
   <button class="btn ghost" id="copy" type="button">Скопировать ссылку</button>
   <p class="hint">Если Happ не открылся — установите его и нажмите кнопку снова.<br>
   <code id="url"></code></p>
+  <p class="paws-row" aria-hidden="true">🐾🐾🐾</p>
 </main><script>
 (function () {
   // Happ принимает прямую ссылку вида happ://add/<URL подписки> (без base64)
@@ -52,7 +201,7 @@
   // а JSON-массив не может содержать строку #profile-title (это сломает JSON),
   // поэтому имя передаём фрагментом ссылки — так документировано в Happ:
   //   https://url.com/sub#Your_TITLE
-  var TITLE = '(•˕ •マⳊДудоня VPN';
+  var TITLE = '(•˕ •マⳊ Дудоня VPN';
 
   // Счётчик устройств. GitHub Pages не отдаёт статистику запросов,
   // поэтому считаем сами: каждое устройство при добавлении подписки

@@ -19,7 +19,7 @@ from urllib.parse import quote
 
 import generate_subscription as gen
 
-TITLE = "(•˕ •マⳊДудоня VPN"
+TITLE = "(•˕ •マⳊ Дудоня VPN"
 
 
 def lan_ips():
