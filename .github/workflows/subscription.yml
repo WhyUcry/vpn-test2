@@ -47,9 +47,12 @@ jobs:
 
       - name: Prepare Pages site
         run: |
-          mkdir -p site
+          mkdir -p site/output
           cp output/sub.txt site/sub.txt
           cp output/subscription.txt site/subscription.txt
+          cp output/sub.txt site/output/sub.txt
+          cp output/subscription.txt site/output/subscription.txt
+          cp index.html site/index.html
           touch site/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3

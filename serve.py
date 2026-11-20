@@ -18,7 +18,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import generate_subscription as gen
 
-TITLE = "VPN подписка"
+TITLE = "Скапиздончик vpn"
 
 
 def lan_ips():
@@ -64,12 +64,18 @@ class Handler(BaseHTTPRequestHandler):
                 f'<li><a href="{link}">{link.split("#", 1)[-1]}</a></li>'
                 for link in links
             )
+            sub_url = f"http://{self.headers.get('Host', '127.0.0.1')}/sub.txt"
+            happ = "happ://add/" + base64.b64encode(
+                f"{sub_url}#{TITLE}".encode("utf-8")
+            ).decode("ascii")
             html = f"""<!doctype html>
 <html lang="ru"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{TITLE}</title>
 <h1>{TITLE}</h1>
 <p>Серверов: {len(links)}</p>
-<p>Ссылка для VPN-клиента: <code>/sub</code> (base64), <code>/sub.txt</code> (список ссылок)</p>
+<p><a href="{happ}">Добавить в Happ</a></p>
+<p>Ссылка для VPN-клиента: <code>{sub_url}</code></p>
 <ul>{items}</ul>
 </html>"""
             body = html.encode("utf-8")
