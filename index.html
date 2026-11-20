@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#ffddb8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <title>(•˕ •マⳊ Дудоня VPN</title>
 <style>
   :root {
@@ -192,28 +193,26 @@
   </div>
 
   <button class="btn ghost" id="copy" type="button">Скопировать ссылку</button>
-  <a class="btn ghost" id="addCascade" href="#">Добавить с каскадами «Белые списки»</a>
-  <p class="hint">Нажмите кнопку — Happ сам добавит подписку и будет обновлять её каждый час.<br>
-   Кнопка ниже — полная конфигурация с каскадами: там Happ не показывает интервал,<br>
-   задайте его вручную (подписка → Update interval → 1 hour).<br>
+  <p class="hint">Нажмите кнопку — Happ добавит подписку вместе с каскадами «Белые списки».<br>
+   Интервал обновления задаётся в Happ вручную: подписка → Update interval → 1 hour.<br>
   <code id="url"></code></p>
   <p class="paws-row" aria-hidden="true">🐾🐾🐾</p>
 </main><script>
 (function () {
-  // Happ принимает прямую ссылку вида happ://add/<URL подписки> (без base64)
+  // Основная подписка — sub.json с полными Xray-конфигами: именно так работают
+  // каскады «Белые списки» (p1 → tier2 → tier3 через loopback).
   //
-  // Основная подписка — sub.txt: это «текстовый» формат, в котором Happ читает
-  // строки #profile-title и #profile-update-interval. Только так в Happ
-  // видится правильное имя подписки и интервал автообновления (1 час).
-  // В sub.json такие строки вставить нельзя (это сломает JSON), поэтому
-  // sub.json вынесена в отдельную кнопку — она нужна ради каскадов
-  // «Белые списки» (p1 → tier2 → tier3 через loopback).
-  var SUB_PATH = 'output/sub.txt';
-  var CASCADE_PATH = 'output/sub.json';
+  // В JSON-массив нельзя вставить строку #profile-title (это сломает JSON),
+  // поэтому Happ берёт имя подписки из фрагмента ссылки — формат из доков:
+  //   https://url.com/sub#Your_TITLE
+  //
+  // profile-update-interval для JSON-подписки Happ не читает, поэтому
+  // интервал обновлений задаётся вручную (подписка → Update interval).
+  var SUB_PATH = 'output/sub.json';
 
-  // Название подписки используется только для каскадной ссылки: там нет
-  // #profile-title, поэтому имя Happ возьмёт из фрагмента ссылки
-  // (формат из доков Happ: https://url.com/sub#Your_TITLE)
+  // Название подписки. Передаём Happ через фрагмент ссылки.
+  // Если Happ показывает непонятное «название из ссылки» (URL-encoded) —
+  // просто переименуйте подписку в Happ (долгий тап → Rename).
   var TITLE = '(•˕ •マⳊ Дудоня VPN';
 
   // Счётчик устройств. GitHub Pages не отдаёт статистику запросов,
@@ -225,24 +224,17 @@
   var DEVICE_KEY = 'skapidzonchik-sub-added';
 
   var base = new URL(SUB_PATH, location.href).href;
-  // Имя и интервал лежат внутри sub.txt (#profile-title / #profile-update-interval),
-  // поэтому фрагмент к основной ссылке не добавляем — иначе Happ показывает
-  // вместо нормального имени «url-encoded» строку из ссылки.
-  var subUrl = base;
+  // Имя подписки Happ берёт из фрагмента ссылки (для JSON-подписки другого
+  // способа передать имя с GitHub Pages нет).
+  var subUrl = base + '#' + encodeURIComponent(TITLE);
   var deep = 'happ://add/' + subUrl;
 
-  var cascadeBase = new URL(CASCADE_PATH, location.href).href;
-  var cascadeUrl = cascadeBase + '#' + encodeURIComponent(TITLE);
-  var cascadeDeep = 'happ://add/' + cascadeUrl;
-
   var addBtn = document.getElementById('add');
-  var cascadeBtn = document.getElementById('addCascade');
   var copyBtn = document.getElementById('copy');
   var status = document.getElementById('status');
   var urlEl = document.getElementById('url');
 
   addBtn.href = deep;
-  cascadeBtn.href = cascadeDeep;
   urlEl.textContent = base;
 
   function counterUrl(action) {
@@ -334,7 +326,6 @@
   console.log('Консоль: vpnSub.count() — количество устройств, vpnSub.help() — все команды.');
 
   addBtn.addEventListener('click', function () { registerDevice(false); });
-  cascadeBtn.addEventListener('click', function () { registerDevice(false); });
 
   copyBtn.addEventListener('click', function () {
     var done = function () {

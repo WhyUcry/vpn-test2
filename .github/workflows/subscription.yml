@@ -7,6 +7,7 @@ on:
       - "configs/**"
       - "generate_subscription.py"
       - "index.html"
+      - "favicon.svg"
       - ".github/workflows/subscription.yml"
   workflow_dispatch:
 
@@ -27,12 +28,11 @@ jobs:
         with:
           ref: main
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
+      # setup-python не используем: на ubuntu-latest Python 3 уже есть в образе,
+      # а скрипт берёт только стандартную библиотеку. Это снимает ошибку
+      # «Unable to resolve action actions/setup-python@v5» в редакторе.
       - name: Generate subscription
-        run: python generate_subscription.py
+        run: python3 generate_subscription.py
 
       - name: Commit updated subscription
         run: |
@@ -56,6 +56,7 @@ jobs:
           cp output/subscription.txt site/output/subscription.txt
           cp output/sub.json site/output/sub.json
           cp index.html site/index.html
+          cp favicon.svg site/favicon.svg
           touch site/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3
