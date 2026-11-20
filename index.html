@@ -91,23 +91,67 @@
     });
   }
 
-  // Учитываем устройство только один раз
-  function registerDevice() {
+  // Учитываем устройство только один раз (force = true — учесть принудительно)
+  function registerDevice(force) {
     var known = false;
     try { known = localStorage.getItem(DEVICE_KEY) === '1'; } catch (e) {}
-    if (known) { logCount(); return; }
+    if (known && force !== true) { logCount(); return Promise.resolve(); }
 
-    hitCount().then(function (n) {
+    return hitCount().then(function (n) {
       try { localStorage.setItem(DEVICE_KEY, '1'); } catch (e) {}
       console.log('Устройство учтено. Всего устройств с подпиской «Скапиздончик vpn»: ' + n);
+      return n;
     }).catch(function (e) {
       console.warn('Не удалось обновить счётчик устройств:', e);
+      return null;
     });
   }
 
-  logCount();
+  // --- API для браузерной консоли (DevTools) ---
+  // vpnSub.count()    — показать количество устройств
+  // vpnSub.register() — учесть это устройство принудительно
+  // vpnSub.forget()   — забыть это устройство (учтётся заново)
+  // vpnSub.help()     — список команд
+  var vpnSub = {
+    count: function () {
+      return readCount().then(function (n) {
+        console.log('Устройств с подпиской «Скапиздончик vpn»: ' + n);
+        return n;
+      }).catch(function (e) {
+        console.warn('Не удалось получить количество устройств:', e);
+        return null;
+      });
+    },
+    register: function () {
+      return registerDevice(true);
+    },
+    forget: function () {
+      try { localStorage.removeItem(DEVICE_KEY); } catch (e) {}
+      console.log('Это устройство забыто: при следующем добавлении подписки оно учтётся снова.');
+    },
+    help: function () {
+      console.log(
+        '%cПодписка «Скапиздончик vpn» — команды в консоли',
+        'font-weight:bold'
+      );
+      console.table([
+        { команда: 'vpnSub.count()', описание: 'Показать количество устройств с подпиской' },
+        { команда: 'vpnSub.register()', описание: 'Учесть это устройство принудительно' },
+        { команда: 'vpnSub.forget()', описание: 'Забыть это устройство' },
+        { команда: 'vpnSub.help()', описание: 'Показать эту справку' },
+      ]);
+      console.log('Прямой адрес счётчика: ' + counterUrl('get'));
+      return 'Готово';
+    },
+    url: base,
+    deepLink: deep,
+  };
+  window.vpnSub = vpnSub;
 
-  addBtn.addEventListener('click', registerDevice);
+  logCount();
+  console.log('Консоль: vpnSub.count() — количество устройств, vpnSub.help() — все команды.');
+
+  addBtn.addEventListener('click', function () { registerDevice(false); });
 
   copyBtn.addEventListener('click', function () {
     var done = function () {
@@ -132,7 +176,7 @@
   // На телефоне сразу открываем Happ
   if (/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
     status.textContent = 'Открываем Happ…';
-    registerDevice();
+    registerDevice(false);
     setTimeout(function () { location.href = deep; }, 700);
   }
 })();
